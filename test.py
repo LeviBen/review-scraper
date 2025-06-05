@@ -1467,10 +1467,14 @@ class ReviewScraper:
         return webdriver.Chrome(service=Service(self.driver_path), options=options)
 
     def find_representative(self, text):
+        matched_reps = []
         for name, aliases in self.sales_team.items():
-            if any(alias.lower() in text.lower() for alias in aliases):
-                return name
-        return None
+            for alias in aliases:
+                # Buscar palabra completa, no substring
+                if re.search(rf'\b{re.escape(alias)}\b', text, re.IGNORECASE):
+                    matched_reps.append(name)
+                    break
+        return matched_reps if matched_reps else None
 
     def parse_google_date(self, raw_text):
         try:
@@ -1534,8 +1538,8 @@ class ReviewScraper:
             review_elements = driver.find_elements(By.CLASS_NAME, "jftiEf")
             for el in review_elements:
                 text = el.text
-                rep = self.find_representative(text)
-                if not rep:
+                reps = self.find_representative(text)
+                if not reps or not isinstance(reps, list):
                     continue
                 try:
                     stars_raw = el.find_element(By.CSS_SELECTOR, 'span[role="img"]').get_attribute("aria-label")
@@ -1550,13 +1554,14 @@ class ReviewScraper:
                 except:
                     date = "Unknown"
 
-                reviews.append({
-                    "Representative": rep,
-                    "Date": date,
-                    "Stars": stars,
-                    "Text": text.strip(),
-                    "Platform": "Google"
-                })
+                for rep in reps:
+                    reviews.append({
+                        "Representative": rep,
+                        "Date": date,
+                        "Stars": stars,
+                        "Text": text.strip(),
+                        "Platform": "Google"  # o "Trustpilot"
+                    })
         except Exception as e:
             print(f"❌ Google scraping error: {e}")
 
@@ -1589,8 +1594,8 @@ class ReviewScraper:
             for block in review_blocks:
                 try:
                     text = " ".join([p.text for p in block.find_elements(By.CSS_SELECTOR, 'p') if p.text.strip()])
-                    rep = self.find_representative(text)
-                    if not rep:
+                    reps = self.find_representative(text)
+                    if not reps or not isinstance(reps, list):
                         continue
                     try:
                         stars_text = re.search(r'Rated (\d) out of 5',
@@ -1604,13 +1609,14 @@ class ReviewScraper:
                     except:
                         date_text = "Unknown"
 
-                    reviews.append({
-                        "Representative": rep,
-                        "Date": date_text,
-                        "Stars": stars_text,
-                        "Text": text.strip(),
-                        "Platform": "Trustpilot"
-                    })
+                    for rep in reps:
+                        reviews.append({
+                            "Representative": rep,
+                            "Date": date_text,
+                            "Stars": stars_text,
+                            "Text": text.strip(),
+                            "Platform": "Google"  # o "Trustpilot"
+                        })
                 except Exception as e:
                     print(f"⚠️ Error procesando una reseña: {e}")
                     continue
