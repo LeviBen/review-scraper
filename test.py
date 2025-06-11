@@ -662,7 +662,7 @@ class ReviewScraper:
         "Cyrus Holder"
     ],
     "Samuel Johnson": [
-        "Samuel Johnson"
+        "Samuel Johnson", "Sam Johnson"
     ],
     "Ari Levin": [
         "Ari Levin"
@@ -1317,6 +1317,9 @@ class ReviewScraper:
     ],
     "Paul Darkow": [
         "Paul Darkow"
+    ],
+    "Paul Gabay": [
+        "Paul Gabay"
     ],
     "Jano Rathert": [
         "Jano Rathert"
