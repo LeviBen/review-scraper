@@ -1360,6 +1360,9 @@ class ReviewScraper:
     "Adam Jay Sher": [
         "Adam Jay Sher"
     ],
+    "Jeffrey Paz": [
+        "Jeffrey Paz", "Jeff Paz"
+    ],
     "Valentin Nkoussou": [
         "Valentin Nkoussou"
     ],
